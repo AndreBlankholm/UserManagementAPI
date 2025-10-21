@@ -1,4 +1,5 @@
 using UserManagementAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,16 @@ app.MapGet("/api/users/{id:int}", (int id) =>
 // POST /api/users - Create new user
 app.MapPost("/api/users", (User user) =>
 {
+    // Validate the user data
+    var validationContext = new ValidationContext(user);
+    var validationResults = new List<ValidationResult>();
+    
+    if (!Validator.TryValidateObject(user, validationContext, validationResults, true))
+    {
+        var errors = validationResults.Select(vr => vr.ErrorMessage).ToList();
+        return Results.BadRequest(new { errors });
+    }
+    
     user.Id = nextId++;
     users.Add(user);
     return Results.Created($"/api/users/{user.Id}", user);
@@ -46,7 +57,19 @@ app.MapPut("/api/users/{id:int}", (int id, User updatedUser) =>
     var user = users.FirstOrDefault(u => u.Id == id);
     if (user == null) return Results.NotFound();
     
+    // Validate the updated user data
+    var validationContext = new ValidationContext(updatedUser);
+    var validationResults = new List<ValidationResult>();
+    
+    if (!Validator.TryValidateObject(updatedUser, validationContext, validationResults, true))
+    {
+        var errors = validationResults.Select(vr => vr.ErrorMessage).ToList();
+        return Results.BadRequest(new { errors });
+    }
+    
     user.Name = updatedUser.Name;
+    user.Title = updatedUser.Title;
+    user.Email = updatedUser.Email;
     user.Title = updatedUser.Title;
     return Results.Ok(user);
 });

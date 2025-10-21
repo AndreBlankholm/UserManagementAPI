@@ -14,7 +14,8 @@ Content-Type: application/json
 
 {
   "name": "John Doe",
-  "title": "Software Developer"
+  "title": "Software Developer",
+  "email": "john.doe@example.com"
 }
 
 ### 3. Create second user
@@ -23,7 +24,8 @@ Content-Type: application/json
 
 {
   "name": "Shalette Harrison",
-  "title": "Baby Boss"
+  "title": "Baby Boss",
+  "email": "shalette.harrison@example.com"
 }
 
 ### 4. Get all users (should show 2 users)
@@ -38,7 +40,8 @@ Content-Type: application/json
 
 {
   "name": "John Updated",
-  "title": "Senior Developer"
+  "title": "Senior Developer",
+  "email": "john.updated@example.com"
 }
 
 ### 7. Get updated user
