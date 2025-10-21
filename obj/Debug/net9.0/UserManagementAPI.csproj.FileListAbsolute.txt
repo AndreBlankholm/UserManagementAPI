@@ -31,3 +31,4 @@ C:\Users\ablan\Documents\Repos\UserManagementAPI\obj\Debug\net9.0\refint\UserMan
 C:\Users\ablan\Documents\Repos\UserManagementAPI\obj\Debug\net9.0\UserManagementAPI.pdb
 C:\Users\ablan\Documents\Repos\UserManagementAPI\obj\Debug\net9.0\UserManagementAPI.genruntimeconfig.cache
 C:\Users\ablan\Documents\Repos\UserManagementAPI\obj\Debug\net9.0\ref\UserManagementAPI.dll
+C:\Users\ablan\Documents\Repos\UserManagementAPI\obj\Debug\net9.0\UserManagementAPI.sourcelink.json
