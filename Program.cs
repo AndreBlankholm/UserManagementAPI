@@ -16,21 +16,22 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Simple in-memory storage
-var users = new List<User>();
+// Optimized in-memory storage - Dictionary for O(1) lookups
+var users = new Dictionary<int, User>();
 var nextId = 1;
 
 // Home page
 app.MapGet("/", () => "Hi, this is the home page");
 
 // GET /api/users - Get all users
-app.MapGet("/api/users", () => users);
+app.MapGet("/api/users", () => users.Values.ToList());
 
 // GET /api/users/{id} - Get user by ID
 app.MapGet("/api/users/{id:int}", (int id) =>
 {
-    var user = users.FirstOrDefault(u => u.Id == id);
-    return user == null ? Results.NotFound() : Results.Ok(user);
+    if (users.TryGetValue(id, out var user))
+        return Results.Ok(user);
+    return Results.NotFound();
 });
 
 // POST /api/users - Create new user
@@ -47,15 +48,15 @@ app.MapPost("/api/users", (User user) =>
     }
     
     user.Id = nextId++;
-    users.Add(user);
+    users[user.Id] = user;
     return Results.Created($"/api/users/{user.Id}", user);
 });
 
 // PUT /api/users/{id} - Update user
 app.MapPut("/api/users/{id:int}", (int id, User updatedUser) =>
 {
-    var user = users.FirstOrDefault(u => u.Id == id);
-    if (user == null) return Results.NotFound();
+    if (!users.TryGetValue(id, out var user))
+        return Results.NotFound();
     
     // Validate the updated user data
     var validationContext = new ValidationContext(updatedUser);
@@ -77,10 +78,9 @@ app.MapPut("/api/users/{id:int}", (int id, User updatedUser) =>
 // DELETE /api/users/{id} - Delete user
 app.MapDelete("/api/users/{id:int}", (int id) =>
 {
-    var user = users.FirstOrDefault(u => u.Id == id);
-    if (user == null) return Results.NotFound();
+    if (!users.Remove(id))
+        return Results.NotFound();
     
-    users.Remove(user);
     return Results.NoContent();
 });
 
