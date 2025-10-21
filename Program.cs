@@ -16,6 +16,43 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Simple logging middleware
+app.Use(async (context, next) =>
+{
+    var method = context.Request.Method;
+    var path = context.Request.Path;
+    
+    // Call the next middleware
+    await next();
+    
+    var statusCode = context.Response.StatusCode;
+    
+    // Log the request details
+    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {method} {path} - {statusCode}");
+});
+
+// Exception handling middleware
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {ex.Message}");
+        
+        // Set response to JSON and 500 status
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        
+        // Return consistent JSON error response
+        var errorResponse = new { error = "Internal server error." };
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    }
+});
+
 // Optimized in-memory storage - Dictionary for O(1) lookups
 var users = new Dictionary<int, User>();
 var nextId = 1;
