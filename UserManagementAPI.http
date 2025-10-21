@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
   "name": "Shalette Harrison",
-  "title": "Project Manager"
+  "title": "Baby Boss"
 }
 
 ### 4. Get all users (should show 2 users)
