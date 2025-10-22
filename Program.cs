@@ -16,22 +16,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Simple logging middleware
-app.Use(async (context, next) =>
-{
-    var method = context.Request.Method;
-    var path = context.Request.Path;
-    
-    // Call the next middleware
-    await next();
-    
-    var statusCode = context.Response.StatusCode;
-    
-    // Log the request details
-    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {method} {path} - {statusCode}");
-});
-
-// Exception handling middleware
+// Error-handling middleware first
 app.Use(async (context, next) =>
 {
     try
@@ -51,6 +36,56 @@ app.Use(async (context, next) =>
         var errorResponse = new { error = "Internal server error." };
         await context.Response.WriteAsJsonAsync(errorResponse);
     }
+});
+
+// Authentication middleware next
+app.Use(async (context, next) =>
+{
+    // Skip authentication for home page and OpenAPI endpoints
+    if (context.Request.Path == "/" || context.Request.Path.StartsWithSegments("/swagger") || context.Request.Path.StartsWithSegments("/openapi"))
+    {
+        await next();
+        return;
+    }
+    
+    // Check for Authorization header
+    if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
+        context.Response.StatusCode = 401;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new { error = "Authorization header is required." });
+        return;
+    }
+    
+    var token = authHeader.ToString();
+    
+    // Simple token validation (in production, use proper JWT validation)
+    // Valid tokens: "Bearer valid-token-123" or "Bearer admin-token-456"
+    if (token != "Bearer valid-token-123" && token != "Bearer admin-token-456")
+    {
+        context.Response.StatusCode = 401;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new { error = "Invalid or expired token." });
+        return;
+    }
+    
+    // Token is valid, continue to next middleware
+    await next();
+});
+
+// Logging middleware last
+app.Use(async (context, next) =>
+{
+    var method = context.Request.Method;
+    var path = context.Request.Path;
+    
+    // Call the next middleware
+    await next();
+    
+    var statusCode = context.Response.StatusCode;
+    
+    // Log the request details
+    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {method} {path} - {statusCode}");
 });
 
 // Optimized in-memory storage - Dictionary for O(1) lookups
@@ -108,7 +143,6 @@ app.MapPut("/api/users/{id:int}", (int id, User updatedUser) =>
     user.Name = updatedUser.Name;
     user.Title = updatedUser.Title;
     user.Email = updatedUser.Email;
-    user.Title = updatedUser.Title;
     return Results.Ok(user);
 });
 
