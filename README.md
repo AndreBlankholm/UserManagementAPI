@@ -67,6 +67,123 @@ The application uses a professional middleware pipeline in this order:
 
 3. Test endpoints using the included `UserManagementAPI.http` file or tools like Postman.
 
+## Download & Test
+
+### Clone the Repository
+```bash
+git clone https://github.com/AndreBlankholm/UserManagementAPI.git
+cd UserManagementAPI
+```
+
+### Run the Application
+```bash
+dotnet restore
+dotnet run
+```
+
+### Test Functionality
+
+**Option 1: Use VS Code REST Client**
+- Open `UserManagementAPI.http` in VS Code with the REST Client extension
+- Click "Send Request" on any endpoint to test
+
+**Option 2: Test with cURL**
+```bash
+# Get all users
+curl -H "Authorization: Bearer valid-token-123" https://localhost:7124/api/users
+
+# Create a user
+curl -X POST https://localhost:7124/api/users \
+  -H "Authorization: Bearer valid-token-123" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","title":"Developer","email":"john@example.com"}'
+```
+
+**Option 3: Swagger UI**
+- Navigate to: https://localhost:7124/swagger
+- Click "Authorize" and enter: `Bearer valid-token-123`
+- Test all endpoints directly in the browser
+
+## Step-by-Step Walkthrough
+
+### 1. Start the Application
+After running `dotnet run`, you should see:
+```
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7124
+      Now listening on: http://localhost:5124
+```
+
+### 2. Visit the Home Page
+- Open browser to: http://localhost:5124
+- You should see: "Welcome to User Management API!"
+- This confirms the app is running (no authentication needed)
+
+### 3. Check Swagger Documentation
+- Navigate to: https://localhost:7124/swagger
+- Browse all available endpoints
+- Click "Authorize" and enter: `Bearer valid-token-123`
+
+### 4. Make Your First API Call
+**Get all users (initially empty):**
+```bash
+curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+```
+Expected response: `[]` (empty array)
+
+### 5. Create Your First User
+```bash
+curl -X POST http://localhost:5124/api/users \
+  -H "Authorization: Bearer valid-token-123" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alice Smith","title":"Product Manager","email":"alice@company.com"}'
+```
+Expected response:
+```json
+{"id":1,"name":"Alice Smith","title":"Product Manager","email":"alice@company.com"}
+```
+
+### 6. Verify the User Was Created
+```bash
+curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+```
+Expected response:
+```json
+[{"id":1,"name":"Alice Smith","title":"Product Manager","email":"alice@company.com"}]
+```
+
+### 7. Get User by ID
+```bash
+curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users/1
+```
+
+### 8. Update the User
+```bash
+curl -X PUT http://localhost:5124/api/users/1 \
+  -H "Authorization: Bearer valid-token-123" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alice Johnson","title":"Senior Product Manager","email":"alice.johnson@company.com"}'
+```
+
+### 9. Test Authentication (Optional)
+Try without token to see 401 error:
+```bash
+curl http://localhost:5124/api/users
+```
+Expected response: `{"error":"Authorization header is required."}`
+
+### 10. Delete the User
+```bash
+curl -X DELETE http://localhost:5124/api/users/1 \
+  -H "Authorization: Bearer valid-token-123"
+```
+
+### 11. Verify Deletion
+```bash
+curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+```
+Expected response: `[]` (empty again)
+
 ## Authentication
 
 All API endpoints (except home page) require a valid Bearer token:
