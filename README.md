@@ -1,38 +1,58 @@
 # User Management API
 
-A simple REST API for managing user records built with ASP.NET Core and minimal APIs.
+A secure REST API for managing user records built with ASP.NET Core minimal APIs, featuring token-based authentication, comprehensive validation, and professional middleware architecture.
 
 **Author:** Andre Blankholm
 
-## Overview
+## What This App Does
 
-This application provides basic CRUD (Create, Read, Update, Delete) operations for user management. It stores user data in memory and offers a lightweight solution for testing and learning API development.
+This application provides a complete user management system with:
 
-## Features
-
-- Create new users
-- Retrieve all users or specific users by ID
-- Update existing user information
-- Delete users
-- Simple home page endpoint
+- **CRUD Operations**: Create, read, update, and delete user records
+- **Token Authentication**: Secure API access with Bearer token validation
+- **Data Validation**: Comprehensive input validation with detailed error messages
+- **Performance Optimization**: Dictionary-based storage for O(1) lookup operations
+- **Error Handling**: Consistent JSON error responses for all failures
+- **Request Logging**: Complete audit trail of all API requests and responses
 
 ## User Model
 
 Each user contains:
-- ID (auto-generated)
-- Name
-- Title
+- **ID** (auto-generated integer)
+- **Name** (required, 1-100 characters)
+- **Title** (required, 1-100 characters)
+- **Email** (required, valid email format, max 255 characters)
+
+## Middleware Architecture
+
+The application uses a professional middleware pipeline in this order:
+
+### 1. Error Handling Middleware
+- Catches all unhandled exceptions
+- Returns consistent JSON error responses: `{ "error": "Internal server error." }`
+- Logs exception details for debugging
+
+### 2. Authentication Middleware
+- Validates Bearer tokens for all API endpoints
+- Returns 401 responses for missing or invalid tokens
+- Allows public access to home page and documentation
+- Valid tokens: `Bearer valid-token-123` or `Bearer admin-token-456`
+
+### 3. Logging Middleware
+- Records HTTP method, request path, and response status code
+- Provides complete audit trail: `[timestamp] METHOD /path - statusCode`
+- Logs all requests including successful and failed attempts
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | / | Home page |
-| GET | /api/users | Get all users |
-| GET | /api/users/{id} | Get user by ID |
-| POST | /api/users | Create new user |
-| PUT | /api/users/{id} | Update user |
-| DELETE | /api/users/{id} | Delete user |
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|----------------|
+| GET | / | Home page | Public |
+| GET | /api/users | Get all users | Required |
+| GET | /api/users/{id} | Get user by ID | Required |
+| POST | /api/users | Create new user | Required |
+| PUT | /api/users/{id} | Update user | Required |
+| DELETE | /api/users/{id} | Delete user | Required |
 
 ## Quick Start
 
@@ -47,14 +67,26 @@ Each user contains:
 
 3. Test endpoints using the included `UserManagementAPI.http` file or tools like Postman.
 
+## Authentication
+
+All API endpoints (except home page) require a valid Bearer token:
+
+```
+Authorization: Bearer valid-token-123
+```
+
 ## Example Usage
 
 Create a user:
 ```json
 POST /api/users
+Authorization: Bearer valid-token-123
+Content-Type: application/json
+
 {
   "name": "John Doe",
-  "title": "Software Developer"
+  "title": "Software Developer",
+  "email": "john.doe@example.com"
 }
 ```
 
@@ -63,7 +95,8 @@ Response:
 {
   "id": 1,
   "name": "John Doe",
-  "title": "Software Developer"
+  "title": "Software Developer",
+  "email": "john.doe@example.com"
 }
 ```
 
