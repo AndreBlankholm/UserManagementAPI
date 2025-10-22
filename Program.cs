@@ -48,24 +48,24 @@ app.Use(async (context, next) =>
         return;
     }
     
-    // Check for Authorization header
-    if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+    // Check for API Key header
+    if (!context.Request.Headers.TryGetValue("X-API-Key", out var apiKeyHeader))
     {
         context.Response.StatusCode = 401;
         context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new { error = "Authorization header is required." });
+        await context.Response.WriteAsJsonAsync(new { error = "API Key header is required." });
         return;
     }
     
-    var token = authHeader.ToString();
+    var apiKey = apiKeyHeader.ToString();
     
-    // Simple token validation (in production, use proper JWT validation)
-    // Valid tokens: "Bearer valid-token-123" or "Bearer admin-token-456"
-    if (token != "Bearer valid-token-123" && token != "Bearer admin-token-456")
+    // Valid API keys (in production, store these securely hashed in database)
+    var validApiKeys = new[] { "api-key-12345", "admin-api-key-67890" };
+    if (!validApiKeys.Contains(apiKey))
     {
         context.Response.StatusCode = 401;
         context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new { error = "Invalid or expired token." });
+        await context.Response.WriteAsJsonAsync(new { error = "Invalid API key." });
         return;
     }
     

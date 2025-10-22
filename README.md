@@ -101,8 +101,63 @@ curl -X POST https://localhost:7124/api/users \
 
 **Option 3: Swagger UI**
 - Navigate to: https://localhost:7124/swagger
-- Click "Authorize" and enter: `Bearer valid-token-123`
+- Click "Authorize" and enter: `api-key-12345`
 - Test all endpoints directly in the browser
+
+## For Testers & Developers
+
+### 🚀 This App is Public & Ready to Test!
+
+**Good News:** This API is designed for public testing! Anyone can:
+- ✅ Clone this repository to any device
+- ✅ Run the app locally (`dotnet run`)
+- ✅ Test all endpoints using the provided API keys
+- ✅ No registration or special access required
+
+### 📋 Testing Instructions for Others
+
+**Step 1: Get the Code**
+```bash
+git clone https://github.com/AndreBlankholm/UserManagementAPI.git
+cd UserManagementAPI
+```
+
+**Step 2: Run on Your Device**
+```bash
+dotnet restore
+dotnet run
+```
+
+**Step 3: Use These Public API Keys**
+The app includes these test API keys that work for everyone:
+- `api-key-12345` (standard access)
+- `admin-api-key-67890` (admin access)
+
+**Step 4: Test Any Endpoint**
+```bash
+# Example: Get all users
+curl -H "X-API-Key: api-key-12345" http://localhost:5124/api/users
+
+# Example: Create a user
+curl -X POST http://localhost:5124/api/users \
+  -H "X-API-Key: api-key-12345" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","title":"Tester","email":"test@example.com"}'
+```
+
+### 🔐 Security Notes for Testers
+
+- **API Keys are public** - visible in the source code for easy testing
+- **No personal data required** - test freely without registration
+- **Device independent** - works on Windows, Mac, Linux
+- **Local only** - your test data stays on your machine
+- **Memory storage** - data resets when you restart the app
+
+This setup makes it perfect for:
+- 🎓 Learning API development
+- 🧪 Testing API concepts
+- 🔍 Code review and examination
+- 📝 Portfolio demonstrations
 
 ## Step-by-Step Walkthrough
 
@@ -122,19 +177,19 @@ info: Microsoft.Hosting.Lifetime[14]
 ### 3. Check Swagger Documentation
 - Navigate to: https://localhost:7124/swagger
 - Browse all available endpoints
-- Click "Authorize" and enter: `Bearer valid-token-123`
+- Click "Authorize" and enter: `api-key-12345`
 
 ### 4. Make Your First API Call
 **Get all users (initially empty):**
 ```bash
-curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+curl -H "X-API-Key: api-key-12345" http://localhost:5124/api/users
 ```
 Expected response: `[]` (empty array)
 
 ### 5. Create Your First User
 ```bash
 curl -X POST http://localhost:5124/api/users \
-  -H "Authorization: Bearer valid-token-123" \
+  -H "X-API-Key: api-key-12345" \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice Smith","title":"Product Manager","email":"alice@company.com"}'
 ```
@@ -145,7 +200,7 @@ Expected response:
 
 ### 6. Verify the User Was Created
 ```bash
-curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+curl -H "X-API-Key: api-key-12345" http://localhost:5124/api/users
 ```
 Expected response:
 ```json
@@ -154,33 +209,33 @@ Expected response:
 
 ### 7. Get User by ID
 ```bash
-curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users/1
+curl -H "X-API-Key: api-key-12345" http://localhost:5124/api/users/1
 ```
 
 ### 8. Update the User
 ```bash
 curl -X PUT http://localhost:5124/api/users/1 \
-  -H "Authorization: Bearer valid-token-123" \
+  -H "X-API-Key: api-key-12345" \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice Johnson","title":"Senior Product Manager","email":"alice.johnson@company.com"}'
 ```
 
 ### 9. Test Authentication (Optional)
-Try without token to see 401 error:
+Try without API key to see 401 error:
 ```bash
 curl http://localhost:5124/api/users
 ```
-Expected response: `{"error":"Authorization header is required."}`
+Expected response: `{"error":"API Key header is required."}`
 
 ### 10. Delete the User
 ```bash
 curl -X DELETE http://localhost:5124/api/users/1 \
-  -H "Authorization: Bearer valid-token-123"
+  -H "X-API-Key: api-key-12345"
 ```
 
 ### 11. Verify Deletion
 ```bash
-curl -H "Authorization: Bearer valid-token-123" http://localhost:5124/api/users
+curl -H "X-API-Key: api-key-12345" http://localhost:5124/api/users
 ```
 Expected response: `[]` (empty again)
 
